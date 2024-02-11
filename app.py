@@ -103,7 +103,7 @@ def embeddings_on_pinecone(texts):
 
 def query_llm(retriever, query):
     #llm = OpenAIChat(openai_api_key=st.session_state.openai_api_key)
-    llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
+    llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":1024})
     qa_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=retriever,
