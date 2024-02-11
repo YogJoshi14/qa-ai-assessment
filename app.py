@@ -17,7 +17,6 @@ import textract
 st.set_page_config(page_title="chatbot")
 st.title("Chat with Documents")
 
-
 num_of_top_selection = 3
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
@@ -63,8 +62,7 @@ def get_text_from_docx(docx):
     return text
 
 def get_text_from_text_file(text_file):
-    with open(text_file, 'r', encoding='utf-8') as file:
-        text = file.read()
+    text = text_file.read()
     return text
 
 def get_text_from_other_file(file_path):
@@ -83,7 +81,7 @@ def load_documents(docs):
         elif doc.name.lower().endswith('.docx'):
             text += get_text_from_docx(doc)
         elif doc.name.lower().endswith(('.txt', '.md')):
-            text += get_text_from_text_file(doc)
+            text += str(get_text_from_text_file(doc))
         else:
             # Handle other file types, you can extend this as needed
             text += get_text_from_other_file(doc)
@@ -128,7 +126,7 @@ def input_fields():
         # st.text_input("Pinecone environment")
         st.session_state.pinecone_index = index_name
         # st.text_input("Pinecone index name")
-    st.session_state.source_docs = st.file_uploader(label="Upload Documents", type="pdf", accept_multiple_files=True)
+    st.session_state.source_docs = st.file_uploader(label="Upload Documents", accept_multiple_files=True)
     #
 
 
@@ -137,7 +135,8 @@ def process_documents():
     if not st.session_state.pinecone_api_key or not st.session_state.pinecone_env or not st.session_state.pinecone_index or not st.session_state.source_docs:
         st.warning(f"Please upload the documents and provide the missing fields.")
     else:
-        try:
+        # try:
+        if True:
             # for source_doc in st.session_state.source_docs:
             if st.session_state.source_docs:
                 #
@@ -149,8 +148,8 @@ def process_documents():
                 texts = split_documents(documents)
                 #
                 st.session_state.retriever = embeddings_on_pinecone(texts)
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+        # except Exception as e:
+        #     st.error(f"An error occurred: {e}")
 
 def boot():
     #
