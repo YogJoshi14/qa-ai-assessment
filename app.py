@@ -11,7 +11,8 @@ from langchain_community.vectorstores import Pinecone
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 
 import streamlit as st
-
+from docx import Document
+import textract
 
 st.set_page_config(page_title="chatbot")
 st.title("Chat with Documents")
@@ -23,7 +24,7 @@ CHUNK_OVERLAP = 50
 embedding_dim = 768
 
 # Initialize Pinecone
-pc = pinecone.Pinecone(api_key=os.environ.getattribute("PINECONE_API_KEY"))
+pc = pinecone.Pinecone(api_key=os.environ("PINECONE_API_KEY"))
 index_name = "qp-ai-assessment"
 
 
@@ -40,16 +41,50 @@ def recreate_index():
         name=index_name,
         metric='cosine',
         dimension=embedding_dim,
-        spec=pinecone.PodSpec(os.environ.getattribute("PINECONE_ENV"))  # 1536 dim of text-embedding-ada-002
+        spec=pinecone.PodSpec(os.environ("PINECONE_ENV"))  # 1536 dim of text-embedding-ada-002
     )
     print(f"Created new index: {index_name}")
 
-def load_documents(pdf_docs):
-    text = ""   
-    for pdf in pdf_docs:
-        pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            text += page.extract_text()
+def get_text_from_pdf(pdf):
+    pdf_reader = PdfReader(pdf)
+    text = ""
+    for page in pdf_reader.pages:
+        text += page.extract_text()
+    return text
+
+def get_text_from_docx(docx):
+    doc = Document(docx)
+    text = ""
+    for paragraph in doc.paragraphs:
+        text += paragraph.text + "\n"
+    return text
+
+def get_text_from_text_file(text_file):
+    with open(text_file, 'r', encoding='utf-8') as file:
+        text = file.read()
+    return text
+
+def get_text_from_other_file(file_path):
+    try:
+        text = textract.process(file_path, method='pdftotext').decode('utf-8')
+        return text
+    except Exception as e:
+        print(f"Error extracting text from {file_path}: {e}")
+        return ""
+
+def load_documents(docs):
+    text = ""
+    for doc in docs:
+        if doc.name.lower().endswith('.pdf'):
+            text += get_text_from_pdf(doc)
+        elif doc.name.lower().endswith('.docx'):
+            text += get_text_from_docx(doc)
+        elif doc.name.lower().endswith(('.txt', '.md')):
+            text += get_text_from_text_file(doc)
+        else:
+            # Handle other file types, you can extend this as needed
+            text += get_text_from_other_file(doc)
+
     return text
 
 
@@ -82,15 +117,10 @@ def query_llm(retriever, query):
 def input_fields():
     #
     with st.sidebar:
-        #
-        # if "openai_api_key" in st.secrets:
-        #     st.session_state.openai_api_key = st.secrets.openai_api_key
-        # else:
-        #     st.session_state.openai_api_key = st.text_input("OpenAI API key", type="password")
         
-        st.session_state.pinecone_api_key = os.environ.getattribute("PINECONE_API_KEY")
+        st.session_state.pinecone_api_key = os.environ("PINECONE_API_KEY")
         # st.text_input("Pinecone API key", type="password")
-        st.session_state.pinecone_env = os.environ.getattribute("PINECONE_ENV")
+        st.session_state.pinecone_env = os.environ("PINECONE_ENV")
         # st.text_input("Pinecone environment")
         st.session_state.pinecone_index = index_name
         # st.text_input("Pinecone index name")
