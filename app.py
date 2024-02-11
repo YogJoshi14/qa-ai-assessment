@@ -171,5 +171,6 @@ def boot():
 
 if __name__ == '__main__':
     #
+    recreate_index()
     boot()
     
