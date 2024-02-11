@@ -153,6 +153,9 @@ def boot():
     input_fields()
     #
     st.button("Submit Documents", on_click=process_documents)
+
+    if "retriever" not in st.session_state:
+        st.session_state.retriever = None  
     #
     if "messages" not in st.session_state:
         st.session_state.messages = []    
