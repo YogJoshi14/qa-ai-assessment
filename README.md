@@ -20,7 +20,9 @@ Simple Contextual Chat Bot
 Advanced Challenge:
 - Break down the document into multiple chunks/ paragraphs. 
 - Store them in a vector database like pinecone.  
-- When you ask a question find out the top 3 chunks that will likely have the answer to the question using semantic similarity search. 
+- When you ask a question find out the top 3 chunks that will likely have the answer to the question using semantic similarity search.
+
+# huggingface Space Here : [Space](https://huggingface.co/spaces/yogjoshi14/chat_with_documents)
 
 #**System Design**
 
@@ -38,4 +40,3 @@ Advanced Challenge:
 1. Embedding : As the project has made use of readily available huggingface embeddings, it has max dimension of 768. We can make use of alternate embeddings such as HuggingFaceInstructEmbeddings, Ollama embeddings which are open-source or OpenAI embeddings.
 2. LLM : Making use of llm which has more parameter and was trained more data can also provide optimal results.
 
-# Hugging Face Space Here : [Space](https://huggingface.co/spaces/yogjoshi14/chat_with_documents)
