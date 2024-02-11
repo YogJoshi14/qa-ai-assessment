@@ -22,7 +22,7 @@ num_of_top_selection = 3
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 embedding_dim = 768
-
+reset_index = False
 # Initialize Pinecone
 pc = pinecone.Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index_name = "qp-ai-assessment"
@@ -40,10 +40,13 @@ def recreate_index():
     pc.create_index(
         name=index_name,
         metric='cosine',
-        dimension=embedding_dim,
-        spec=pinecone.PodSpec(os.getenv("PINECONE_ENV"))  # 1536 dim of text-embedding-ada-002
+        dimension=embedding_dim, # 1536 dim of text-embedding-ada-002
+        spec=pinecone.PodSpec(os.getenv("PINECONE_ENV"))  
     )
     print(f"Created new index: {index_name}")
+
+if reset_index:
+    recreate_index()
 
 def get_text_from_pdf(pdf):
     pdf_reader = PdfReader(pdf)
@@ -108,6 +111,7 @@ def query_llm(retriever, query):
         llm=llm,
         retriever=retriever,
         return_source_documents=True,
+        response_if_no_docs_found= "I don't know"
     )
     result = qa_chain({'question': query, 'chat_history': st.session_state.messages})
     result = result['answer']
@@ -171,6 +175,5 @@ def boot():
 
 if __name__ == '__main__':
     #
-    recreate_index()
     boot()
     
