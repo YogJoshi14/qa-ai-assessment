@@ -1,0 +1,12 @@
+langchain
+langchain-community
+PyPDF2
+streamlit
+tiktoken
+pinecone-client
+sentence-transformers==2.2.2
+accelerate
+transformers
+huggingface-hub
+python-docx
+textract
