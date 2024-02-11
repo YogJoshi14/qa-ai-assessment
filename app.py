@@ -24,7 +24,7 @@ CHUNK_OVERLAP = 50
 embedding_dim = 768
 
 # Initialize Pinecone
-pc = pinecone.Pinecone(api_key=os.environ("PINECONE_API_KEY"))
+pc = pinecone.Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index_name = "qp-ai-assessment"
 
 
@@ -41,7 +41,7 @@ def recreate_index():
         name=index_name,
         metric='cosine',
         dimension=embedding_dim,
-        spec=pinecone.PodSpec(os.environ("PINECONE_ENV"))  # 1536 dim of text-embedding-ada-002
+        spec=pinecone.PodSpec(os.getenv("PINECONE_ENV"))  # 1536 dim of text-embedding-ada-002
     )
     print(f"Created new index: {index_name}")
 
@@ -118,9 +118,9 @@ def input_fields():
     #
     with st.sidebar:
         
-        st.session_state.pinecone_api_key = os.environ("PINECONE_API_KEY")
+        st.session_state.pinecone_api_key = os.getenv("PINECONE_API_KEY")
         # st.text_input("Pinecone API key", type="password")
-        st.session_state.pinecone_env = os.environ("PINECONE_ENV")
+        st.session_state.pinecone_env = os.getenv("PINECONE_ENV")
         # st.text_input("Pinecone environment")
         st.session_state.pinecone_index = index_name
         # st.text_input("Pinecone index name")
